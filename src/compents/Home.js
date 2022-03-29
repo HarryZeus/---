@@ -1,26 +1,41 @@
-import React, { Component } from 'react';
+import React from 'react';
+import sea from '../sea.jpg';
+import tools from '../tools.png';
 
-
-class Home extends Component {
-    
-    render() {
+function Home() {
       return (
         <div>
-          <h2>Sharing Storage Based on Ipfs</h2>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
-          <p>welcome!!!</p>
+          <div>
+            <h1>Want to know how it is works?</h1>
+            <br></br>
+            <br></br>
+            <br></br>
+          </div>
+          <div className='intro intro1'>
+            <h2>数据发布</h2>
+            <p>ipfs + ethereum</p>
+            <img src={sea} className='pic seaPic'></img>
+          </div>
+          <br></br>
+          <br></br>
+          <br></br>
+          <div className='intro intro2'>
+            <img src={sea} className='pic seaPic'></img>
+            <h2>数据发布</h2>
+            <p>smart contract</p>
+          </div>
+          <br></br>
+          <br></br>
+          <br></br>
+          <br></br>
+          <div className='intro intro3'>
+            <h2>使用到的技术</h2>
+            <p>.......</p>
+            <img src={tools} className='pic seaPic'></img>
+          </div>
         </div>
       )
-    }
-  }
+}
   
   
   export default Home;
