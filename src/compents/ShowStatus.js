@@ -251,8 +251,10 @@ function Status(props){
         })
         .then(function(receipt){
           //setObj(receipt);
-          props.addArray(receipt[0], receipt[1]);
-          console.log(receipt);
+          if(receipt[0] != ''){
+            props.addArray(receipt[0], receipt[1]);
+            console.log(receipt);
+          }
         }) 
         console.log(props.Array);
         web3.eth.getPastLogs({
@@ -266,13 +268,17 @@ function Status(props){
           props.addTemp(response[0].address, web3.utils.hexToNumber(response[0].topics[2]));
         });
       }
-      //console.log(props.Temp);
 
       //var len = array.length;
-      for(var j=0, len = array.length; j < len; j++){
-        props.addTask(props.Temp[j+1][0], props.Array[j+1][1], props.Array[j+1][0],props.Temp[j+1][1]);
+     /*  for(var j=0, len = array.length, k = props.Array.length; j < len; j++){
+        props.addTask(props.Temp[j+1][0], props.Array[1 + j][1], props.Array[j+1][0],props.Temp[j+1][1]);
+      } */
+
+      for(var j=0, len = array.length, k = props.Array.length , l = props.Temp.length; (k - len + j) < k && (l - len + j) < l; j++){
+        props.addTask(props.Temp[l - len + j][0], props.Array[k - len + j][1], props.Array[k - len + j][0],props.Temp[l - len + j][1]);
       }
       
+      console.log()
       
       }
       const template1 = (

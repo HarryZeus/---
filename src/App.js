@@ -11,7 +11,7 @@ import './index.css';
 
 function App(props) {
 
-  const arrayContractAddress = '0xdfB105272F9fCe188D1909bfc5528727d97c8438';
+  const arrayContractAddress = '0x7D9E61F25A6Bafd608F2898E49CdC87656C96004';
 
   const [tasks, setTasks] = useState(props.tasks); // 卡片信息
 
