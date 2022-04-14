@@ -84,7 +84,7 @@ section {
 article {
   background-color: #4CAF50;
   color: #f3f3f3;
-  width: 50%;
+  width: 40%;
   padding: 10px;
   margin: 10px;
   border-radius: 8px;
@@ -118,13 +118,13 @@ article {
 
 .chosefiles{
   background-color: #4CAF50; /* Green */
-  width: 30%;
+  width: 35%;
   margin-top: 10px;
 }
 .inputvalues{
   margin: 10px 2px;
   background-color: darkblue;
-  width: 30%;
+  width: 35%;
 }
 .bindAccount{
   background-color: #4CAF50; /* Green */
@@ -146,10 +146,14 @@ article {
   padding: auto;
   margin: 5px;
 }
+
+.trade:hover{
+  color:coral;
+}
 /* input输入框样式 */
 
 .input{
-  width: 25%;
+  width: 30%;
   margin: 10px;
   height: 30px;
   border-width: 5px;
@@ -175,6 +179,7 @@ article {
 /* 主页样式设置 */
 .intro {
   column-count: 2;
+  
 }
 
 .pic {
@@ -202,4 +207,33 @@ article {
 .link-cancel {
   text-decoration: none;
   color: white;
+}
+
+
+
+/*  附加装饰  */
+
+.border-form{
+  width: 50%;
+  border-radius: 5px;
+  background-color: white;
+  padding: 20px;
+  margin: 0% 25%;
+  border-style:hidden;
+
+}
+
+.pic-logo{
+  height: 180px;
+  width: 300px;
+}
+
+.ipfs-logo{
+  height: 180px;
+}
+
+.intro-text{
+  text-align: left;
+  padding: 50px;
+  font-size: large;
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ipfsLogo from '../IPFS_logo.png';
 
 function CatHash(){
    const [input_cid, setInput_cid] = useState("");
@@ -12,7 +13,14 @@ function CatHash(){
       alert(input_cid);
     }
       return (
+    <div>
       <div>
+        <img src={ipfsLogo} className='ipfs-logo'></img>
+        <br></br>
+        <br></br>
+      </div>
+  
+      <div className='border-form'>
         <form onSubmit={handleSubmit}>
           <label className='label catHash_label' htmlFor='new-cid-input'>
             <h2>请输入cid, 检索对应的文件:</h2> <br/>
@@ -31,6 +39,8 @@ function CatHash(){
           <h4><a href={href}>在网关中查看你的文件</a></h4>
         </div>
       </div>
+
+    </div>
       )
     
   }

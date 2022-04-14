@@ -192,7 +192,7 @@ function Purchase(props) {
       }
 
       return ( 
-        <div>
+        <div className='border-form'>
          <h1>purchase confirmation</h1>
          <div className='confirm'>
            <p>确定向合约地址为: <b><i>{props.purchaseId}</i></b> 发起交易吗?</p>

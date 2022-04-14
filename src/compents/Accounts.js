@@ -44,6 +44,12 @@ function Accounts(props){
     }
     const signUpTemplate = (
         <div>
+            <div>
+                <h4>使用平台服务时，须拥有以太坊账户</h4>
+                <br></br>
+            </div>
+
+        <div className='border-form'>
             <h3>将你的以太坊账户与当前客户端绑定</h3>
             <div> 
                 <input id="file" type="text" 
@@ -58,10 +64,13 @@ function Accounts(props){
                 <button type="submit" className='button bindAccount' onClick={handleSubmit1}>Sign-up</button>
             </div>
         </div>
+
+        </div>
+        
     );
 
     const viewTemplate = (
-        <div>
+        <div className='border-form'>
             <h3>当前的账户地址为: {props.acc}</h3>
             <p>sk: {sk} <br></br>
             请保存好私钥不要透露给别人, 注意该内容只显示一次</p>

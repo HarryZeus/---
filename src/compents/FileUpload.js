@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logo from '../logo.png';
 import { create } from 'ipfs-http-client';
 import Web3 from 'web3';
 
@@ -305,6 +306,10 @@ function Upload(props) {
   
   return(
     <div>
+      <div>
+        <img src={logo} className='pic-logo'></img>
+      </div>
+    <div className='border-form'>
       <h2>请完成以下表单</h2>
       <form className='' onSubmit={handleSubmit} > 
       <div>
@@ -339,6 +344,14 @@ function Upload(props) {
         />
         <button className='button chosefiles' onClick={handleClick}>选择文件并上传</button>
       </div>   
+    </div>
+    <div>
+      <br></br>
+      <p>先上传要交易的数据文件，然后完成表单内容</p>
+      <br></br>
+      <br></br>
+      
+    </div>
     </div>
   )
 }

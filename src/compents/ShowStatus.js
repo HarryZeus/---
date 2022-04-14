@@ -285,7 +285,7 @@ function Status(props){
         <div>
         <section className='flex-container'>
         <br></br>
-        <button className='refresh-btn' onClick={handleRefresh}>刷新</button>
+        <button className='refresh-btn' onClick={handleRefresh}>fresh</button>
         <article>
           <button className='delete-btn' onClick={handleClick}>X</button>
           <h3>{props.id}</h3>
@@ -304,7 +304,7 @@ function Status(props){
         <div>
         <section className='flex-container'>
         <br></br>
-        <article>
+        <article> 
           <button className='delete-btn' onClick={handleClick}>X</button>
           <h3>{props.id}</h3>
           <h4>合约地址：{props.address}</h4>
