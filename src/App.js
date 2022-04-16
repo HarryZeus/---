@@ -11,7 +11,11 @@ import './index.css';
 
 function App(props) {
 
-  const arrayContractAddress = '0x7D9E61F25A6Bafd608F2898E49CdC87656C96004';
+  const arrayContractAddress = '0xaE08d6a415296D85b66Ca4fD6a6C6a17f9f411CE';
+
+  const [iv, setIv] = useState('');
+  const [enc_Symm, setSymm] = useState('');
+  const [pk, setPk] = useState('');
 
   const [tasks, setTasks] = useState(props.tasks); // 卡片信息
 
@@ -173,13 +177,21 @@ function App(props) {
 
                       arrayContractAddress={arrayContractAddress}
                 />}/>
-                <Route path="/catcontents" element={<CatHash />}/>
+                <Route path="/catcontents" element={<CatHash 
+                      iv={iv}
+                      pk={pk}
+                      enc_Symm={enc_Symm}
+                />}/>
                 <Route path="/status" element={taskList}/>
                 <Route path="/status/purchase" element={<Purchase 
                       purchaseId={purchaseId}
                       itemPrice={itemPrice}
                       acc={acc}
                       myMap={props.myMap}
+
+                      setPk={setPk}
+                      setSymm={setSymm}
+                      setIv={setIv}
                 />} />
             </Route>
         </Routes>

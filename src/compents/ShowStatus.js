@@ -87,6 +87,16 @@ const abi = [
         "internalType": "string",
         "name": "",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "nonpayable",
@@ -140,7 +150,7 @@ const abi = [
       },
       {
         "internalType": "string",
-        "name": "_sk",
+        "name": "_pk",
         "type": "string"
       },
       {
@@ -156,6 +166,16 @@ const abi = [
       {
         "internalType": "string",
         "name": "_kind",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_iv",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_encodeSymm",
         "type": "string"
       }
     ],
@@ -238,7 +258,7 @@ function Status(props){
           setArray(tmp);
         }) 
         console.log(array);
-        if(array != ''){
+        if(array !== ''){
           alert('刷新成功');
         }
     
@@ -251,7 +271,7 @@ function Status(props){
         })
         .then(function(receipt){
           //setObj(receipt);
-          if(receipt[0] != ''){
+          if(receipt[0] !== ''){
             props.addArray(receipt[0], receipt[1]);
             console.log(receipt);
           }

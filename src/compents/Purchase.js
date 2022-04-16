@@ -58,8 +58,36 @@ const web3 = new Web3(
     },
     {
       "inputs": [],
+      "name": "getDescValues",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "getHashValues",
       "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
         {
           "internalType": "string",
           "name": "",
@@ -122,7 +150,7 @@ const web3 = new Web3(
         },
         {
           "internalType": "string",
-          "name": "_sk",
+          "name": "_pk",
           "type": "string"
         },
         {
@@ -138,6 +166,16 @@ const web3 = new Web3(
         {
           "internalType": "string",
           "name": "_kind",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_iv",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_encodeSymm",
           "type": "string"
         }
       ],
@@ -182,6 +220,9 @@ function Purchase(props) {
         })
         .then(function(result){
           console.log(result);
+          props.setPk(result[1]);
+          props.setSymm(result[3]);
+          props.setIv(result[2]);
           alert(result[0]);
         })
         }
