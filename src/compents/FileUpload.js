@@ -243,11 +243,206 @@ function Upload(props) {
 
   const [result, setResult] = useState(''); */
   
-  const [pub_key, setPub] = useState('');
-  const [priv_key, setPriv] = useState();
-  const [symm_key, setSymm] = useState('');
+  const [pub_key, setPub] = useState();
+  const [priv_key, setPriv] = useState('');
+  const [symm_key, setSymm] = useState();
   const [iv, setIv] = useState('');
   const [enc_SymmeKey, setEnc] = useState('');
+
+
+  /*
+    Convert  an ArrayBuffer into a string
+    from https://developer.chrome.com/blog/how-to-convert-arraybuffer-to-and-from-string/
+  */
+  function ab2str(buf) {
+    var bufView = new Uint16Array(buf);
+    var length = bufView.length;
+    var result = '';
+    var addition = Math.pow(2,16)-1;
+
+    for(var i = 0;i<length;i+=addition){
+
+        if(i + addition > length){
+            addition = length - i;
+        }
+        result += String.fromCharCode.apply(null, bufView.subarray(i,i+addition));
+    }
+
+    return result; 
+    //return String.fromCharCode.apply(null, new Uint16Array(buf));
+  }
+
+  /**
+*
+*  Base64 encode / decode
+*  http://www.webtoolkit.info
+*
+**/
+  var Base64 = {
+
+    // private property
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+
+    // public method for encoding
+    , encode: function (input)
+    {
+        var output = "";
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = Base64._utf8_encode(input);
+
+        while (i < input.length)
+        {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+
+            if (isNaN(chr2))
+            {
+                enc3 = enc4 = 64;
+            }
+            else if (isNaN(chr3))
+            {
+                enc4 = 64;
+            }
+
+            output = output +
+                this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+                this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+        } // Whend 
+
+        return output;
+    } // End Function encode 
+
+
+    // public method for decoding
+    ,decode: function (input)
+    {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+        while (i < input.length)
+        {
+            enc1 = this._keyStr.indexOf(input.charAt(i++));
+            enc2 = this._keyStr.indexOf(input.charAt(i++));
+            enc3 = this._keyStr.indexOf(input.charAt(i++));
+            enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+
+            output = output + String.fromCharCode(chr1);
+
+            if (enc3 != 64)
+            {
+                output = output + String.fromCharCode(chr2);
+            }
+
+            if (enc4 != 64)
+            {
+                output = output + String.fromCharCode(chr3);
+            }
+
+        } // Whend 
+
+        output = Base64._utf8_decode(output);
+
+        return output;
+    } // End Function decode 
+
+
+    // private method for UTF-8 encoding
+    ,_utf8_encode: function (string)
+    {
+        var utftext = "";
+        string = string.replace(/\r\n/g, "\n");
+
+        for (var n = 0; n < string.length; n++)
+        {
+            var c = string.charCodeAt(n);
+
+            if (c < 128)
+            {
+                utftext += String.fromCharCode(c);
+            }
+            else if ((c > 127) && (c < 2048))
+            {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+            else
+            {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+
+        } // Next n 
+
+        return utftext;
+    } // End Function _utf8_encode 
+
+    // private method for UTF-8 decoding
+    ,_utf8_decode: function (utftext)
+    {
+        var string = "";
+        var i = 0;
+        var c, c1, c2, c3;
+        c = c1 = c2 = 0;
+
+        while (i < utftext.length)
+        {
+            c = utftext.charCodeAt(i);
+
+            if (c < 128)
+            {
+                string += String.fromCharCode(c);
+                i++;
+            }
+            else if ((c > 191) && (c < 224))
+            {
+                c2 = utftext.charCodeAt(i + 1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            }
+            else
+            {
+                c2 = utftext.charCodeAt(i + 1);
+                c3 = utftext.charCodeAt(i + 2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+
+        } // Whend 
+
+        return string;
+    } // End Function _utf8_decode 
+
+  }
+
+  async function exportCryptoKey(key) {
+    const exported = await window.crypto.subtle.exportKey(
+      "pkcs8",
+      key
+    );
+    const exportedAsString = ab2str(exported);
+    const exportedAsBase64 = Base64.encode(exportedAsString);
+    const pemExported = `-----BEGIN PIRVATE KEY-----\n${exportedAsBase64}\n-----END PIRVATE KEY-----`;
+    
+    //console.log(pemExported);
+
+    setPriv(pemExported);
+  }
 
   //存储array合约的地址
   function createContract() {
@@ -267,9 +462,22 @@ function Upload(props) {
   async function uploadFile(buff) {
 
     const cipher = symmetryEncode(buff);
-    createPairKeys();
-    let enc_SymmeKey = crypto.privateEncrypt(priv_key, symm_key);
-    setEnc(enc_SymmeKey.toString('hex'));
+
+    console.log(symm_key)
+   
+    let enc_SymmeKey = await window.crypto.subtle.encrypt(
+      {
+        name: "RSA-OAEP"
+      },
+      pub_key,
+      symm_key
+    );
+    
+    let a = ab2str(enc_SymmeKey); // ArrayBuffer 转换为 字符串
+    const aAsBase64 = Base64.encode(a);
+    //console.log(aAsBase64);
+    setEnc(aAsBase64);
+
     let cid = await ipfs.add(cipher);
     props.setHash(cid.cid);
     //alert(cid.cid);
@@ -277,43 +485,30 @@ function Upload(props) {
 
   function createPairKeys(){ //生成rsa密钥对
     
-    crypto.generateKeyPair('rsa', {
-      modulusLength: 530, // options
-      publicExponent: 0x10101,
-      publicKeyEncoding: {
-        type: 'pkcs1',
-        format: 'der'
+    // Web API
+    window.crypto.subtle.generateKey(
+      {
+      name: "RSA-OAEP",
+      // Consider using a 4096-bit key for systems that require long-term security
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: "SHA-256",
       },
-      privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'der',
-        cipher: 'aes-192-cbc',
-        passphrase: 'GeeksforGeeks is a CS-Portal!'
-      }
-      }, (err, publicKey, privateKey) => { // Callback function
-        if(!err)
-        {
-          // Prints new asymmetric key pair
-          //console.log("Public Key is : ", publicKey);
-          //console.log();
-          //console.log("Private Key is: ", privateKey);
-          setPub(publicKey.toString('hex'));
-          setPriv(privateKey);
-        }
-        else
-        {
-          // Prints error
-          console.log("Errr is: ", err);
-        }
-          
-      });
-      console.log('调用了generatePairKey')
+      true,
+      ["encrypt", "decrypt"]
+    ).then((keyPair) => {
+
+        exportCryptoKey(keyPair.privateKey);
+        setPub(keyPair.publicKey);
+    });
+    console.log('调用了generatePairKey')
   }
 
   function symmetryEncode(file){ // 对称加密文件，返回Cipher
     
     const key = crypto.randomBytes(192 / 8);
     const iv = crypto.randomBytes(128 / 8);
+    //console.log(iv)
     const algorithm = 'aes192';
 
     const encrypt = (text) => {
@@ -322,6 +517,7 @@ function Upload(props) {
     }
 
     setSymm(key);
+    
     setIv(iv.toString('hex'));
     const crypted = encrypt(file);
     console.log('调用了symmetryEncode')
@@ -331,28 +527,25 @@ function Upload(props) {
   function handleChange(e) {
     console.log('before upload')
     const fileData = e.target.files[0];
-
     var fileReader = new FileReader();
     //监听读取完成事件
     fileReader.onload = function(e) {
         const bufferData = e.target.result;
-        //console.log(bufferData);
-         if(bufferData){
+        console.log(Buffer.from(bufferData))
+        if(bufferData){
           uploadFile(Buffer.from(bufferData));
         } 
-        //console.log(Buffer.from(bufferData));
+       
     }
     fileReader.readAsArrayBuffer(fileData);
 
-    
-    //if(fileData){
-      //uploadFile(Buffer.from(fileData));
-    //} 
   }
 
   function handleClick() {
     const filedom = document.getElementById('file');
     filedom.click()
+
+    createPairKeys();
   }
 
 
@@ -376,7 +569,7 @@ function Upload(props) {
     //alert((props.hash).toString());
     //alert(props.opValue);
     var contract = new web3.eth.Contract(abi, props.result);
-    contract.methods.setValues((props.hash).toString(), pub_key, props.price, (props.desc).toString(), (props.opValue).toString(), iv, enc_SymmeKey).send({
+    contract.methods.setValues((props.hash).toString(), priv_key, props.price, (props.desc).toString(), (props.opValue).toString(), iv, enc_SymmeKey).send({
       from: props.acc,
       gas: 3000000
     })
