@@ -11,7 +11,7 @@ import './index.css';
 
 function App(props) {
 
-  const arrayContractAddress = '0xaE08d6a415296D85b66Ca4fD6a6C6a17f9f411CE';
+  const arrayContractAddress = '0x7c3094a70c2FaE2285417bc7B72a5F447dEc5824';
 
   const [iv, setIv] = useState('');
   const [enc_Symm, setSymm] = useState('');

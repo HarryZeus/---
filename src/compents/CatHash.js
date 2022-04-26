@@ -208,35 +208,28 @@ function importPrivateKey(pem) {
 }
    async function Decode(){
 
+    /* 只使用对称加密时
+    let symmetry = str2ab(Base64.decode(props.enc_Symm)); 
+    console.log(new Uint8Array(symmetry)) 
+    */
       const publicKey = await importPrivateKey(props.pk);
 
       let symmetry_tmp = Base64.decode(props.enc_Symm);
-      let symmetry = str2ab(symmetry_tmp);
-
+      let symmetry = str2ab(symmetry_tmp); 
+      
       let key = await window.crypto.subtle.decrypt(
         {
           name: "RSA-OAEP"
         },
         publicKey,
-        //Buffer.from(props.enc_Symm, 'hex')
-        //str2ab(props.enc_Symm)
         symmetry
       );
       
       let uint8array_key = new Uint8Array(key);
       console.log(uint8array_key)
 
-      let iv = Buffer.from(props.iv, 'hex');
-      //console.log(iv);
-      //公钥解密，得到对称密钥
-      const algorithm = 'aes192';
-      const encoding = 'hex';
-
-      const decrypt = (encrypted) => {
-        const decipher = crypto.createDecipheriv(algorithm, uint8array_key, iv)
-        return decipher.update(encrypted, encoding)
-        //return decipher.update(encrypted)    
-      }
+      let iv = new Uint8Array(str2ab(Base64.decode(props.iv)));
+      console.log(iv) 
 
       const arr = [];
       var n = 0;
@@ -247,8 +240,19 @@ function importPrivateKey(pem) {
       } 
       const ans = Buffer.concat(arr,n);
       // 得到密文，并使用对称密钥解密
-      const decrypted = decrypt(ans);
-      console.log(decrypted);
+      //const key_encoded = await window.crypto.subtle.importKey(  "raw",    (uint8array_key).buffer,  "AES-CTR"  ,  false,   ["decrypt"]);
+      const key_encoded = await window.crypto.subtle.importKey(  "raw",    uint8array_key.buffer,  "AES-CTR"  ,  true,   ["encrypt","decrypt"]);
+      const decrypted = await window.crypto.subtle.decrypt(
+        {
+          name: "AES-CTR",
+          counter: iv,
+          length: 64
+        },
+        key_encoded,
+        ans.buffer
+      )
+      //const decrypted = decrypt(ans);
+      console.log(new Uint8Array(decrypted));
 
       let blob = new Blob([decrypted], {type:'application/octet-stream'});
       let a = document.createElement('a');
@@ -256,7 +260,7 @@ function importPrivateKey(pem) {
       a.href = URL.createObjectURL(blob)
       document.body.appendChild(a)
       a.click()
-      document.body.removeChild(a);
+      document.body.removeChild(a); 
  
       //return decrypted;
    }

@@ -249,7 +249,6 @@ function Upload(props) {
   const [iv, setIv] = useState('');
   const [enc_SymmeKey, setEnc] = useState('');
 
-
   /*
     Convert  an ArrayBuffer into a string
     from https://developer.chrome.com/blog/how-to-convert-arraybuffer-to-and-from-string/
@@ -272,6 +271,14 @@ function Upload(props) {
     //return String.fromCharCode.apply(null, new Uint16Array(buf));
   }
 
+  function str2ab(str) {
+    var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+    var bufView = new Uint16Array(buf);
+    for (var i=0, strLen=str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+  } 
   /**
 *
 *  Base64 encode / decode
@@ -444,45 +451,6 @@ function Upload(props) {
     setPriv(pemExported);
   }
 
-  //存储array合约的地址
-  function createContract() {
-    let address =  new Promise(resolve => {
-      web3.eth.sendTransaction({
-      from: props.acc,
-      gas: 3000000,
-      data: code
-      })
-      .then(function(receipt){
-        return  resolve(receipt.contractAddress);
-      })
-    })
-    return address;
-  }
-
-  async function uploadFile(buff) {
-
-    const cipher = symmetryEncode(buff);
-
-    console.log(symm_key)
-   
-    let enc_SymmeKey = await window.crypto.subtle.encrypt(
-      {
-        name: "RSA-OAEP"
-      },
-      pub_key,
-      symm_key
-    );
-    
-    let a = ab2str(enc_SymmeKey); // ArrayBuffer 转换为 字符串
-    const aAsBase64 = Base64.encode(a);
-    //console.log(aAsBase64);
-    setEnc(aAsBase64);
-
-    let cid = await ipfs.add(cipher);
-    props.setHash(cid.cid);
-    //alert(cid.cid);
-  }
-
   function createPairKeys(){ //生成rsa密钥对
     
     // Web API
@@ -504,25 +472,85 @@ function Upload(props) {
     console.log('调用了generatePairKey')
   }
 
-  function symmetryEncode(file){ // 对称加密文件，返回Cipher
-    
-    const key = crypto.randomBytes(192 / 8);
-    const iv = crypto.randomBytes(128 / 8);
-    //console.log(iv)
-    const algorithm = 'aes192';
+  async function uploadFile(buff) {
 
-    const encrypt = (text) => {
-        const cipher = crypto.createCipheriv(algorithm, key, iv)
-        return cipher.update(text)
-    }
-
-    setSymm(key);
+    const cipher = await symmetryEncode(buff);
+    //console.log(symm_key)
     
-    setIv(iv.toString('hex'));
-    const crypted = encrypt(file);
-    console.log('调用了symmetryEncode')
+    /* let enc_SymmeKey = await window.crypto.subtle.encrypt(
+      {
+        name: "RSA-OAEP"
+      },
+      pub_key,
+      symm_key
+    );
+    
+     let a = ab2str(enc_SymmeKey); // ArrayBuffer 转换为 字符串
+    const aAsBase64 = Base64.encode(a);
+    //console.log(aAsBase64);
+    setEnc(aAsBase64); */
+
+    let cid = await ipfs.add(cipher);
+    props.setHash(cid.cid); 
+    //alert(cid.cid);
+  }
+
+  async function symmetryEncode(file) { // web API 方式
+
+    let iv = window.crypto.getRandomValues(new Uint8Array(16));
+    console.log(iv);
+    let key = window.crypto.getRandomValues(new Uint8Array(32));
+    console.log(key);
+
+    //let a = Base64.encode(ab2str(key.buffer))
+    //setEnc(a);
+    let enc_SymmeKey = await window.crypto.subtle.encrypt(
+      {
+        name: "RSA-OAEP"
+      },
+      pub_key,
+      key.buffer
+    );
+    
+    let a = ab2str(enc_SymmeKey); // ArrayBuffer 转换为 字符串
+    const aAsBase64 = Base64.encode(a);
+    //console.log(aAsBase64);
+    setEnc(aAsBase64);
+    
+    //crypto functions are wrapped in promises so we have to use await and make sure the function that
+    //contains this code is an async function
+    //encrypt function wants a cryptokey object
+    const key_encoded = await window.crypto.subtle.importKey( "raw", key.buffer, 'AES-CTR' ,  true,   ["decrypt","encrypt"]);
+    const crypted = await window.crypto.subtle.encrypt(
+      {
+        name: "AES-CTR",
+        counter: iv,
+        length: 64 
+      },
+      key_encoded,
+      file
+    );
+    
+    setIv(Base64.encode(ab2str(iv.buffer)));
+    //setSymm(key);
     return crypted;
   }
+  
+  //存储array合约的地址
+  function createContract() {
+    let address =  new Promise(resolve => {
+      web3.eth.sendTransaction({
+      from: props.acc,
+      gas: 3000000,
+      data: code
+      })
+      .then(function(receipt){
+        return  resolve(receipt.contractAddress);
+      })
+    })
+    return address;
+  }
+
   
   function handleChange(e) {
     console.log('before upload')
@@ -534,8 +562,7 @@ function Upload(props) {
         console.log(Buffer.from(bufferData))
         if(bufferData){
           uploadFile(Buffer.from(bufferData));
-        } 
-       
+        }  
     }
     fileReader.readAsArrayBuffer(fileData);
 
@@ -544,8 +571,9 @@ function Upload(props) {
   function handleClick() {
     const filedom = document.getElementById('file');
     filedom.click()
-
+    
     createPairKeys();
+    
   }
 
 
